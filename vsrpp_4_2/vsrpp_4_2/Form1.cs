@@ -160,5 +160,10 @@ namespace vsrpp_4_2
         {
             dgv.RowCount++;
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ExportToExcel();
+        }
     }
 }
