@@ -19,7 +19,7 @@ namespace vsrpp_4_2
         }
 
         DateTimePicker dtp;
-        String[] headerList = {"ФИО","Должность","Дата приёма","Стаж"};
+        String[] headerList = { "ФИО", "Должность", "Дата приёма", "Стаж" };
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -29,9 +29,9 @@ namespace vsrpp_4_2
             dgv.Width = 403;
             dgv.Columns[0].Width = dgv.Columns[1].Width = dgv.Columns[2].Width = dgv.Columns[3].Width = 100;
 
-            for(int i = 0; i < dgv.ColumnCount; ++i)
+            for (int i = 0; i < dgv.ColumnCount; ++i)
             {
-                dgv.Columns[i].HeaderCell.Value = headerList[i];            
+                dgv.Columns[i].HeaderCell.Value = headerList[i];
             }
 
             dtp = new DateTimePicker();
@@ -59,9 +59,10 @@ namespace vsrpp_4_2
 
                 int cellRowIndex = 1;
                 int cellColumnIndex = 1;
-                
+
                 //Loop through each row and read value from each column. 
-                for (int i = 0; i < dgv.Rows.Count - 1; i++)
+                int rowCount = 0;
+                for (int i = 0; i < dgv.Rows.Count; i++)
                 {
                     for (int j = 0; j < dgv.Columns.Count; j++)
                     {
@@ -73,7 +74,7 @@ namespace vsrpp_4_2
                         {
                             if (dgv.Rows[i].Cells[j].Value != DBNull.Value)
                             {
-                                worksheet.Cells[cellRowIndex, cellColumnIndex] = dgv.Rows[i].Cells[j].Value.ToString();
+                                worksheet.Cells[cellRowIndex, cellColumnIndex] = dgv.Rows[i-1].Cells[j].Value.ToString();
                             }
                             else
                             {
@@ -84,7 +85,23 @@ namespace vsrpp_4_2
                     }
                     cellColumnIndex = 1;
                     cellRowIndex++;
+                    rowCount = i;
                 }
+
+                // Set format
+                Range formatRange;
+                formatRange = worksheet.get_Range("a1", "d1");
+                formatRange.EntireRow.Font.Bold = true;
+                formatRange.Borders.Weight = XlBorderWeight.xlThin;
+                formatRange.HorizontalAlignment = HorizontalAlignment.Center;
+
+                rowCount++;
+                worksheet.get_Range("a2", "d" + rowCount).Borders.Weight = XlBorderWeight.xlMedium;
+
+                ((Range)worksheet.Columns["A", System.Type.Missing]).EntireColumn.ColumnWidth = 50;
+                ((Range)worksheet.Columns["B", System.Type.Missing]).EntireColumn.ColumnWidth = 25;
+                ((Range)worksheet.Columns["C", System.Type.Missing]).EntireColumn.ColumnWidth = 25;
+                ((Range)worksheet.Columns["D", System.Type.Missing]).EntireColumn.ColumnWidth = 25;
 
                 //Getting the location and file name of the excel to save from user. 
                 SaveFileDialog saveDialog = new SaveFileDialog();
@@ -113,7 +130,7 @@ namespace vsrpp_4_2
         {
             try
             {
-                if((dgv.Focused) && (dgv.CurrentCell.ColumnIndex == 2))
+                if ((dgv.Focused) && (dgv.CurrentCell.ColumnIndex == 2))
                 {
                     dtp.Location = dgv.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false).Location;
                     dtp.Visible = true;
@@ -134,23 +151,23 @@ namespace vsrpp_4_2
                     dtp.Visible = false;
                 }
             }
-            catch(Exception ex)
-            { MessageBox.Show( ex.ToString()); }
+            catch (Exception ex)
+            { MessageBox.Show(ex.ToString()); }
         }
 
         private void dgv_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
-                if((dgv.Focused) && (dgv.CurrentCell.ColumnIndex == 2))
+                if ((dgv.Focused) && (dgv.CurrentCell.ColumnIndex == 2))
                 {
-                    dgv.CurrentCell.Value = dtp.Value.Date.Date;                   
+                    dgv.CurrentCell.Value = dtp.Value.Date.Date;
                     dgv.Rows[dgv.CurrentCell.RowIndex].Cells[3].Value =
                         DateTime.Today.Date - (DateTime)dgv.CurrentCell.Value;
                 }
             }
-            catch(Exception ex)
-            { MessageBox.Show( ex.ToString()); }
+            catch (Exception ex)
+            { MessageBox.Show(ex.ToString()); }
         }
 
         private void dtp_ValueChanged(object sender, EventArgs e)
@@ -166,6 +183,10 @@ namespace vsrpp_4_2
         private void button2_Click(object sender, EventArgs e)
         {
             ExportToExcel();
+        }
+
+        private void setFormat()
+        {
         }
     }
 }
