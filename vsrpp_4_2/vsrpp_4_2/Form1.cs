@@ -113,7 +113,7 @@ namespace vsrpp_4_2
         {
             try
             {
-                if(dgv.Focused && dgv.CurrentCell.ColumnIndex == 2)
+                if((dgv.Focused) && (dgv.CurrentCell.ColumnIndex == 2))
                 {
                     dtp.Location = dgv.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false).Location;
                     dtp.Visible = true;
@@ -127,7 +127,7 @@ namespace vsrpp_4_2
                         dtp.Value = DateTime.Today;
                     }
                     */
-                    dtp.Value = DateTime.Today;
+                    dtp.Value = DateTime.Today.Date;
                 }
                 else
                 {
@@ -142,9 +142,11 @@ namespace vsrpp_4_2
         {
             try
             {
-                if(dgv.Focused && dgv.CurrentCell.ColumnIndex == 2)
+                if((dgv.Focused) && (dgv.CurrentCell.ColumnIndex == 2))
                 {
-                    dgv.CurrentCell.Value = dtp.Value.Date;
+                    dgv.CurrentCell.Value = dtp.Value.Date.Date;                   
+                    dgv.Rows[dgv.CurrentCell.RowIndex].Cells[3].Value =
+                        DateTime.Today.Date - (DateTime)dgv.CurrentCell.Value;
                 }
             }
             catch(Exception ex)
